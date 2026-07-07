@@ -12,6 +12,15 @@ A busy pet owner needs help staying consistent with pet care. They want an assis
 
 Your job is to design the system first (UML), then implement the logic in Python, then connect it to the Streamlit UI.
 
+## ✨ Features
+
+- **Sorting by time** — the daily plan is ordered chronologically by `"HH:MM"`, with priority (1 = High) breaking exact-time ties. *(`Scheduler.sort_by_time`)*
+- **Filtering** — narrow tasks by completion status, pet, or frequency. *(`Scheduler.filter_by_status` / `filter_by_pet` / `filter_by_frequency`)*
+- **Conflict warnings** — exact same-time double-bookings are detected and surfaced as friendly warnings instead of crashing. *(`Scheduler.find_conflicts` / `conflict_warnings`)*
+- **Daily recurrence** — completing a `daily` or `weekly` task auto-schedules its next occurrence using `timedelta`. *(`Task.mark_complete` / `next_occurrence`, `Pet.complete_task`)*
+- **Daily plan builder** — collects every pending daily task across all pets and returns a sorted, conflict-checked schedule. *(`Scheduler.build_daily_plan`)*
+- **Persistent Streamlit UI** — an `Owner` lives in `st.session_state`, so pets and tasks survive page reruns.
+
 ## What you will build
 
 Your final app should:
@@ -99,12 +108,34 @@ tests\test_pawpal.py .............                                       [100%]
 
 ## 📸 Demo Walkthrough
 
-Describe your app in numbered steps so a reader can follow along without watching a video:
+Launch the app with `streamlit run app.py`, then:
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+1. Enter the owner name (Jordan)
+2. Add pets: 'Biscuit' the dog and 'Mochi' the cat.
+3. Add tasks: *Morning walk* at `08:00`, *Feeding* at `08:00`, *Give medicine* at `09:00`.
+4. Click 'Generate schedule' — the plan is sorted by time, and a ⚠️ conflict warning appears for the two `08:00` tasks. 
+5. Under **Mark a Task Done**, complete the daily *Morning walk* — its next occurrence is auto-scheduled for tomorrow.
+
+Sample CLI output (`python main.py`):
+
+```
+Daily plan for Jordan (sorted by time, then priority):
+  [ ] 08:00 — Feeding (10 min) [priority: high]
+  [ ] 08:00 — Morning walk (30 min) [priority: medium]
+  [ ] 09:00 — Give medicine (5 min) [priority: high]
+
+Conflict check:
+  ⚠️ Conflict at 08:00: 'Feeding' overlaps 'Morning walk'
+
+Biscuit's tasks only:
+  [ ] 08:00 — Morning walk (30 min) [priority: medium]
+  [ ] 09:00 — Give medicine (5 min) [priority: high]
+
+Completing Biscuit's morning walk (daily → auto-reschedules):
+  completed: [x] 08:00 — Morning walk (30 min) [priority: medium]
+  next occurrence due: 2026-07-08
+
+Status summary: 3 pending, 1 completed
+```
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->

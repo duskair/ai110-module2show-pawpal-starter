@@ -1,0 +1,48 @@
+classDiagram
+    %% PawPal+ final architecture — matches pawpal_system.py.
+
+    class Task {
+        +str description
+        +str time
+        +int duration
+        +int priority
+        +str frequency
+        +bool completed
+        +date due_date
+        +mark_complete() Task
+        +next_occurrence() Task
+    }
+
+    class Pet {
+        +str name
+        +str species
+        +list~Task~ tasks
+        +add_task(task: Task) void
+        +remove_task(task: Task) void
+        +complete_task(task: Task) Task
+    }
+
+    class Owner {
+        +str name
+        +dict~str, Pet~ pets
+        +add_pet(pet: Pet) void
+        +get_pet(name: str) Pet
+        +all_tasks() list~Task~
+    }
+
+    class Scheduler {
+        +sort_by_time(tasks: list~Task~) list~Task~
+        +filter_by_status(tasks, completed: bool) list~Task~
+        +filter_by_pet(owner: Owner, pet_name: str) list~Task~
+        +filter_by_frequency(tasks, frequency: str) list~Task~
+        +find_conflicts(tasks: list~Task~) list~tuple~
+        +conflict_warnings(tasks: list~Task~) list~str~
+        +build_daily_plan(owner: Owner) list~Task~
+    }
+
+    Owner "1" --> "*" Pet : owns
+    Pet "1" --> "*" Task : has
+    Task ..> Task : next_occurrence creates
+    Scheduler ..> Owner : reads
+    Scheduler ..> Pet : filters
+    Scheduler ..> Task : sorts / checks

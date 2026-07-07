@@ -61,13 +61,15 @@ if owner.pets:
     with st.form("add_task_form", clear_on_submit=True):
         target_pet = st.selectbox("For pet", list(owner.pets.keys()))
         task_title = st.text_input("Task title", value="Morning walk")
-        c1, c2, c3 = st.columns(3)
+        c1, c2, c3, c4 = st.columns(4)
         with c1:
             task_time = st.text_input("Time (HH:MM)", value="08:00")
         with c2:
             duration = st.number_input("Duration (min)", min_value=1, max_value=240, value=20)
         with c3:
             priority = st.selectbox("Priority", ["high", "medium", "low"])
+        with c4:
+            frequency = st.selectbox("Repeats", ["daily", "weekly", "once"])
         add_task = st.form_submit_button("Add task")
 
     if add_task:
@@ -78,9 +80,10 @@ if owner.pets:
                 time=task_time,
                 duration=int(duration),
                 priority=PRIORITY_VALUES[priority],
+                frequency=frequency,
             )
         )
-        st.success(f"Added '{task_title}' for {target_pet}.")
+        st.success(f"Added '{task_title}' ({frequency}) for {target_pet}.")
 else:
     st.info("Add a pet before assigning tasks.")
 
@@ -89,6 +92,16 @@ st.divider()
 # --- Schedule ---
 st.subheader("Daily Plan")
 if st.button("Generate schedule"):
+    st.session_state.show_plan = True
+
+if st.session_state.get("show_plan"):
+    # Surface conflicts FIRST so a busy owner sees double-bookings before the plan.
+    warnings = Scheduler.conflict_warnings(owner.all_tasks())
+    for warning in warnings:
+        st.warning(warning)
+    if not warnings:
+        st.success("No scheduling conflicts — you're all set! 🐾")
+
     plan = Scheduler.build_daily_plan(owner)
     if plan:
         rows = [
@@ -101,8 +114,28 @@ if st.button("Generate schedule"):
             for t in plan
         ]
         st.table(rows)
-
-        for warning in Scheduler.conflict_warnings(owner.all_tasks()):
-            st.warning(warning)
+        st.caption(f"{len(plan)} task(s) planned, sorted by time then priority.")
     else:
-        st.info("No tasks scheduled yet.")
+        st.info("No pending daily tasks yet. Add one above.")
+
+st.divider()
+
+# --- Mark tasks complete (demonstrates recurrence) ---
+st.subheader("Mark a Task Done")
+st.caption("Completing a daily/weekly task automatically schedules its next occurrence.")
+pending = Scheduler.filter_by_status(owner.all_tasks(), completed=False)
+if pending:
+    labels = {f"{t.time} — {t.description} ({t.frequency})": t for t in pending}
+    choice = st.selectbox("Pending tasks", list(labels.keys()))
+    if st.button("Complete task"):
+        task = labels[choice]
+        # Find the owning pet so the follow-up occurrence lands on it.
+        for pet in owner.pets.values():
+            if task in pet.tasks:
+                follow_up = pet.complete_task(task)
+                st.success(f"Completed '{task.description}'.")
+                if follow_up is not None:
+                    st.info(f"Next '{follow_up.description}' scheduled for {follow_up.due_date}.")
+                break
+else:
+    st.info("No pending tasks to complete.")

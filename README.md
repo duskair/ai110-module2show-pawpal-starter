@@ -79,14 +79,13 @@ tests\test_pawpal.py ..                                                         
 
 ## 📐 Smarter Scheduling
 
-> Fill in once you've implemented scheduling logic.
-
 | Feature | Method(s) | Notes |
 |---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Task sorting | `Scheduler.sort_by_time()` | Sorts by `"HH:MM"` time; ties broken by priority (1 = High first) via a `sorted()` key lambda. |
+| Filtering | `Scheduler.filter_by_pet()`, `Scheduler.filter_by_status()`, `Scheduler.filter_by_frequency()` | Narrow tasks by pet name, completion status, or frequency. |
+| Conflict handling | `Scheduler.find_conflicts()`, `Scheduler.conflict_warnings()` | Detects exact same-time collisions; returns human-readable warnings instead of raising. |
+| Recurring tasks | `Task.mark_complete()`, `Task.next_occurrence()`, `Pet.complete_task()` | Completing a `daily`/`weekly` task auto-creates the next occurrence using `timedelta`. |
+| Daily plan | `Scheduler.build_daily_plan()` | Collects all pending daily tasks across pets and sorts them for the day. |
 
 ## 📸 Demo Walkthrough
 

@@ -57,25 +57,35 @@ Daily plan for Jordan:
 
 ```bash
 # Run the full test suite:
-pytest
+python -m pytest
 
 # Run with coverage:
 pytest --cov
 ```
 
-Sample test output:
+**What the tests cover** (`tests/test_pawpal.py`, 13 tests):
+
+- **Object behavior** — `mark_complete()` flips status; `add_task()` grows the pet's task list.
+- **Sorting correctness** — out-of-order tasks return in chronological order, with priority breaking exact-time ties.
+- **Recurrence logic** — completing a `daily` task creates a follow-up due the next day; `weekly` advances 7 days; `once` returns none; `Pet.complete_task()` re-queues the follow-up.
+- **Conflict detection** — duplicate times are flagged and surfaced as readable warnings; distinct times produce none.
+- **Edge cases** — a pet with no tasks yields an empty plan; completed tasks are excluded from the daily plan.
+
+Successful test run:
 
 ```
-=============================================================================== test session starts ===============================================================================
-platform win32 -- Python 3.12.0, pytest-9.1.1, pluggy-1.6.0
+============================= test session starts =============================
+platform win32 -- Python 3.12.0, pytest-9.0.3, pluggy-1.6.0
 rootdir: C:\Users\cynth\ai110-module2show-pawpal-starter
 plugins: anyio-4.14.1
-collected 2 items                                                                                                                                                                  
+collected 13 items
 
-tests\test_pawpal.py ..                                                                                                                                                      [100%]
+tests\test_pawpal.py .............                                       [100%]
 
-================================================================================ 2 passed in 0.05s ================================================================================
+============================= 13 passed in 0.06s ==============================
 ```
+
+**Confidence level: ★★★★☆ (4/5)** — Core sorting, recurrence, and conflict logic are well covered and green. Docked one star because conflict detection only catches exact `"HH:MM"` matches (not overlapping durations), and time strings aren't yet validated.
 
 ## 📐 Smarter Scheduling
 

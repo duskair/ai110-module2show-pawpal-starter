@@ -48,12 +48,9 @@ Paste a sample of your app's CLI or Streamlit output here so a reader can see wh
 
 ```
 Daily plan for Jordan:
-  08:00 — Feeding (10 min) [priority: high]
   08:00 — Morning walk (30 min) [priority: medium]
   09:00 — Give medicine (5 min) [priority: high]
-
-Conflicts (same time slot):
-  08:00: 'Feeding' vs 'Morning walk'
+  10:00 — Feeding (10 min) [priority: high]
 ```
 
 ## 🧪 Testing PawPal+
@@ -69,7 +66,15 @@ pytest --cov
 Sample test output:
 
 ```
-# Paste your pytest output here
+=============================================================================== test session starts ===============================================================================
+platform win32 -- Python 3.12.0, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\cynth\ai110-module2show-pawpal-starter
+plugins: anyio-4.14.1
+collected 2 items                                                                                                                                                                  
+
+tests\test_pawpal.py ..                                                                                                                                                      [100%]
+
+================================================================================ 2 passed in 0.05s ================================================================================
 ```
 
 ## 📐 Smarter Scheduling

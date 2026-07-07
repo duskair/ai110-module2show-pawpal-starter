@@ -22,7 +22,7 @@ def main() -> None:
     # 3. Assign three tasks across the pets.
     biscuit.add_task(Task("Morning walk", "08:00", 30, priority=2))
     biscuit.add_task(Task("Give medicine", "09:00", 5, priority=1))
-    mochi.add_task(Task("Feeding", "08:00", 10, priority=1))
+    mochi.add_task(Task("Feeding", "10:00", 10, priority=1))
 
     # Build and print the daily plan.
     plan = Scheduler.build_daily_plan(owner)
